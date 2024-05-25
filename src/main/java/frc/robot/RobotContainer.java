@@ -7,14 +7,15 @@ package frc.robot;
 import frc.robot.subsystems.Arm;
 
 public class RobotContainer {
-  private final Arm m_armSubsytem = new Arm();
+  private final Arm m_armSubsystem = new Arm();
 
   public RobotContainer() {
 
-    configureBindings();
+    /*
+      An Example Of How Can This Subsystem Be Used
+      
+        m_armSubsystem.setAngle(90);
+        m_armSubsystem.getAngle();
+    */
   }
-
-  private void configureBindings() {
-  }
-
 }
