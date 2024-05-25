@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -26,6 +28,10 @@ public class Arm extends SubsystemBase {
 
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
+  final TrapezoidProfile m_profile = new TrapezoidProfile(
+    new TrapezoidProfile.Constraints(80, 160)
+  );
+
   public Arm() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
@@ -42,8 +48,17 @@ public class Arm extends SubsystemBase {
 
   public void setAngle(double angle) {
     double rotation = degreesToRotation(angle);
-    firstMotor.setControl(m_request.withPosition(rotation));
-    secondMotor.setControl(m_request.withPosition(rotation));
+
+    TrapezoidProfile.State m_goal = new TrapezoidProfile.State(rotation, 0);
+    TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
+    m_setpoint = m_profile.calculate(0.020, m_setpoint, m_goal);
+
+    m_request.Position = m_setpoint.position;
+    m_request.Velocity = m_setpoint.velocity;
+
+    firstMotor.setControl(m_request);
+    secondMotor.setControl(m_request);
   }
 
   public double getAngle() {
@@ -64,5 +79,15 @@ public class Arm extends SubsystemBase {
       m_Instance = new Arm();
     }
     return m_Instance;
+  }
+
+  @Override
+  public void periodic() {
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+
   }
 }
